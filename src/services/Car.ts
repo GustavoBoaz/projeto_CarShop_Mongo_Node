@@ -16,6 +16,10 @@ class CarServices implements IService<ICar> {
     if (!parsed.success) throw new Error(ErrorTypes.InvalidRequest);
     return this._car.create(parsed.data);
   }
+
+  public async read(): Promise<ICar[]> {
+    return this._car.read();
+  }
 }
 
 export default CarServices;
