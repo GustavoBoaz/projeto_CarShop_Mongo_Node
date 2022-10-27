@@ -3,7 +3,6 @@ import Car from '../../../models/Car';
 import CarServices from '../../../services/Car';
 import { expect }  from 'chai';
 import { carMock, carMockWithId } from '../../mocks/carsMock';
-import { ZodError } from 'zod';
 
 describe('Car Service', () => {
   //GIVEN: Dado que tenho uma Model Car
