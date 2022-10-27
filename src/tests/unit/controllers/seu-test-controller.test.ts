@@ -1,22 +1,41 @@
-// template para criação dos testes de cobertura da camada de controller
+import * as sinon from 'sinon';
+import Car from '../../../models/Car';
+import CarServices from '../../../services/Car';
+import CarController from '../../../controllers/Car';
+import { expect }  from 'chai';
+import { carMock, carMockWithId } from '../../mocks/carsMock';
+import { Request, Response } from 'express';
 
+describe('Car Controller', () => {
+  //GIVEN: Dado que tenho uma Model Car
+  const carModel = new Car();
+  //AND: E tenho serciços para Car
+  const carService = new CarServices(carModel);
+  //AND: E tenho um controlador para Car
+  const carController = new CarController(carService);
 
-// import * as sinon from 'sinon';
-// import chai from 'chai';
-// const { expect } = chai;
+  const req = {} as Request;
+  const res = {} as Response;
+  
+  before(async () => {  
+    sinon.stub(carService, 'create').resolves(carMockWithId);
 
-// describe('Sua descrição', () => {
+    res.status = sinon.stub().returns(res);
+    res.json = sinon.stub().returns(res);
+  });
 
-//   before(async () => {
-//     sinon
-//       .stub()
-//       .resolves();
-//   });
+  after(()=>{
+    sinon.restore();
+  });
 
-//   after(()=>{
-//     sinon.restore();
-//   })
+  describe('Controle para criar um novo Car', () => {
+    it('Sucesso ao criar', async () => {
+      req.body =  carMock;
+      //WHEN: Quando utilizo o controlador de create corretamente
+      await carController.create(req, res);
 
-//   it('', async () => {});
-
-// });
+      //THEN: Então devo receber o status 201
+      expect((res.status as sinon.SinonStub).calledWith(201)).to.be.true;
+    });
+  });
+});
