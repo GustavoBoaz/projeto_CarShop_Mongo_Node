@@ -12,7 +12,10 @@ describe('Car Service', () => {
   
   before(async () => {  
     sinon.stub(carModel, 'create').resolves(carMockWithId);
-  });
+    sinon.stub(carModel, 'read').resolves([carMockWithId]);
+    sinon.stub(carModel, 'readOne')
+      .onCall(0).resolves(carMockWithId);
+  })
 
   after(()=>{
     sinon.restore();
@@ -40,4 +43,49 @@ describe('Car Service', () => {
       expect(result).to.be.instanceOf(Error);
     });
   });
+
+  describe('Serviços para consulta Car', () => {
+    it('Listar todos Car', async () => {
+      //WHEN: Quando utilizo o serviço read
+      const result = await carService.read();
+
+      //THEN: Então devo receber uma lista de Car
+      expect(result.length).to.be.deep.equal(1);
+    });
+
+    it('Consulta um Car pelo Id', async () => {
+      //WHEN: Quando utilizo o serviço readOne com um Id valido
+      const result = await carService.readOne('6359e47b94dc48d1e10c2f20');
+
+      //THEN: Então devo receber um objeto Car
+      expect(result).to.be.deep.equal(carMockWithId);
+    })
+
+    it('Falha com o Id não existente bem formatado', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de create errado
+        await carService.readOne('6359e47b94dc48d1e10c2f2XX');
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+
+    it('Falha com o Id mal formatado', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de create errado
+        await carService.readOne('XXX');
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+  });
+
 });
