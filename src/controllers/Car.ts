@@ -15,4 +15,9 @@ export default class CarController {
     const result = await this._services.read();
     return res.status(200).json(result);
   }
+
+  public async readOne(req: Request, res: Response<ICar>) {
+    const result = await this._services.readOne(req.params.id);
+    return res.status(200).json(result);
+  }
 }

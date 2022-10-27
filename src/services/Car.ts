@@ -20,6 +20,14 @@ class CarServices implements IService<ICar> {
   public async read(): Promise<ICar[]> {
     return this._car.read();
   }
+
+  public async readOne(_id: string): Promise<ICar> {
+    if (_id.length < 24) throw new Error(ErrorTypes.InvalidMongoId);
+
+    const result = await this._car.readOne(_id);
+    if (!result) throw new Error(ErrorTypes.EntityNotFound);
+    return result;
+  }
 }
 
 export default CarServices;
