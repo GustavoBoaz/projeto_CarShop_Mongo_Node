@@ -15,6 +15,11 @@ describe('Car Service', () => {
     sinon.stub(carModel, 'read').resolves([carMockWithId]);
     sinon.stub(carModel, 'readOne')
       .onCall(0).resolves(carMockWithId);
+    sinon.stub(carModel, 'update')
+      .onCall(0).resolves(carMockWithId)
+      .onCall(1).resolves(null)
+      .onCall(2).resolves(null)
+      .onCall(3).resolves(null);
   })
 
   after(()=>{
@@ -88,4 +93,52 @@ describe('Car Service', () => {
     });
   });
 
+  describe('Serviço para manutenção de Car', () => {
+    it('Sucesso ao atualizar', async () => {
+      //WHEN: Quando utilizo o serviço de update corretamente
+      const result = await carService.update('6359e47b94dc48d1e10c2f20', carMockWithId);
+
+      //THEN: Então devo receber o Car alterado
+      expect(result).to.be.deep.equal(carMockWithId);
+    });
+
+    it('Falha na atualização com o Id mal formatado', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de update com Id mal formatado
+        await carService.update('XXX', carMockWithId);
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+
+    it('Falha na atualização com o Id inexistente', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de alteração com Id inexistente
+        await carService.update('6359e47b94dc48d1e10c2fXX', carMockWithId);
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+
+    it('Falha na atualização com o body errado', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de alteração com body da requisição errado
+        await carService.update('6359e47b94dc48d1e10c2f20', {});
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+  });
 });
