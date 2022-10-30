@@ -20,6 +20,10 @@ describe('Car Service', () => {
       .onCall(1).resolves(null)
       .onCall(2).resolves(null)
       .onCall(3).resolves(null);
+    sinon.stub(carModel, 'delete')
+      .onCall(0).resolves(carMockWithId)
+      .onCall(1).resolves(null)
+      .onCall(1).resolves(null);
   })
 
   after(()=>{
@@ -133,6 +137,41 @@ describe('Car Service', () => {
       try {
         //WHEN: Quando utilizo o serviço de alteração com body da requisição errado
         await carService.update('6359e47b94dc48d1e10c2f20', {});
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+
+    it('Sucesso para deletar Car', async () => {
+
+      //WHEN: Quando utilizo o serviço de adeletar com Id valido
+      const result = await carService.delete('6359e47b94dc48d1e10c2f20');
+      
+      //THEN: Então devo receber entidade deletada
+      expect(result).to.be.deep.equal(carMockWithId);
+    });
+
+    it('Falha para deletar com Id mal formatado', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de deletar com id mal formatado
+        await carService.delete('XXX');
+      } catch (error) {
+        result = error;
+      }
+      
+      //THEN: Então devo receber um Error
+      expect(result).to.be.instanceOf(Error);
+    });
+
+    it('Falha para deletar com Id inesistente', async () => {
+      let result;
+      try {
+        //WHEN: Quando utilizo o serviço de deletar com Id inesistente
+        await carService.delete('6359e47b94dc48d1e10c2fXX');
       } catch (error) {
         result = error;
       }
